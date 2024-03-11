@@ -5,6 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
   <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/2.3.1/aframe/build/aframe-ar.js"></script>
+   <script>
+        AFRAME.registerComponent('cursor-listener', {
+          init: function () {
+            this.el.addEventListener('click', function (evt) {
+              // Perform actions on cursor click
+              console.log('Cursor clicked!');
+            });
+          }
+        });
+      </script>      
   <title>AR Holographic Interactions</title>
 </head>
 <body>
@@ -16,15 +26,6 @@
         </a-marker>
         <a-entity camera></a-entity>
     </a-scene>
-    <script>
-        AFRAME.registerComponent('cursor-listener', {
-          init: function () {
-            this.el.addEventListener('click', function (evt) {
-              // Perform actions on cursor click
-              console.log('Cursor clicked!');
-            });
-          }
-        });
-      </script>             
+          
 </body>
 </html>

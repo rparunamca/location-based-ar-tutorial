@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Water Tank Location</title>
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+</head>
+<body>
+  <!-- A-Frame scene to display 3D environment -->
+  <a-scene embedded>
+    <!-- Initialize Google Maps API asynchronously -->
+    <script>
+      function initMap() {
+        // Example water tank locations in Thanjavur, Tamil Nadu
+        const waterTankLocations = [
+          { lat: 10.7850, lng: 79.1373 }, // Water tank 1 coordinates
+          { lat: 10.7865, lng: 79.1388 }, // Water tank 2 coordinates
+          // Add more water tank locations as needed
+        ];
+
+        // Add markers for each water tank location
+        waterTankLocations.forEach((location, index) => {
+          const markerEntity = document.createElement('a-entity');
+          markerEntity.setAttribute('geometry', 'primitive: sphere; radius: 0.1');
+          markerEntity.setAttribute('material', 'color: blue');
+          markerEntity.setAttribute('position', `${location.lat} 0 ${location.lng}`);
+          markerEntity.setAttribute('title', `Water Tank ${index + 1}`);
+          markerEntity.addEventListener('click', () => {
+            console.log(`Latitude: ${location.lat}, Longitude: ${location.lng}`);
+          });
+          document.querySelector('a-scene').appendChild(markerEntity);
+        });
+      }
+      
+      // Load Google Maps API asynchronously with loading=async
+      function loadGoogleMapsScript() {
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyB5FLymjydLwA8Mv_dc19f-D-SbP-I9-CE&callback=initMap&loading=async`;
+        script.defer = true;
+        document.head.appendChild(script);
+      }
+
+      // Call the function to load the Google Maps API
+      loadGoogleMapsScript();
+    </script>
+
+    <!-- Camera entity to set initial viewpoint -->
+    <a-entity camera position="0 2 5"></a-entity>
+
+    <!-- Text entity to display instructions -->
+    <a-text value="Click on water tanks to view coordinates" position="-2 2.5 -5" align="center"></a-text>
+  </a-scene>
+</body>
+</html>

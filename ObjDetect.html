@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>AR Object Detection</title>
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.9.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+</head>
+<body>
+  <video id="videoElement" width="640" height="480" autoplay></video> <!-- Video element for camera feed -->
+  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+    <a-entity camera></a-entity>
+    <a-entity id="overlayContainer"></a-entity> <!-- Container for overlay elements -->
+  </a-scene>
+
+  <script>
+    // Load COCO-SSD model
+    async function loadModel() {
+      console.log('Loading model...');
+      const model = await cocoSsd.load();
+      console.log('Model loaded successfully');
+      return model;
+    }
+
+    // Detect objects in video stream
+    async function detectObjects(video, model) {
+      console.log('Detecting objects...');
+      const predictions = await model.detect(video);
+      console.log('Predictions:', predictions);
+      // Process predictions (e.g., display virtual objects)
+      displayPredictions(predictions);
+    }
+
+    // Display detected objects as virtual elements
+    function displayPredictions(predictions) {
+      const overlayContainer = document.getElementById('overlayContainer');
+      overlayContainer.innerHTML = ''; // Clear previous overlay elements
+      predictions.forEach(prediction => {
+        const { top, left, width, height, class: label } = prediction.bbox;
+        const overlayElement = document.createElement('a-entity');
+        overlayElement.setAttribute('geometry', {
+          primitive: 'plane',
+          width: width / 100,
+          height: height / 100
+        });
+        overlayElement.setAttribute('position', { x: left / 100, y: -top / 100, z: -1 });
+        overlayElement.setAttribute('material', 'color: red; opacity: 0.5');
+        overlayContainer.appendChild(overlayElement);
+      });
+    }
+
+    // Main function
+    async function main() {
+      const model = await loadModel();
+      console.log('Model:', model);
+      const video = document.getElementById('videoElement');
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+        .then(stream => {
+          video.srcObject = stream;
+          video.onloadedmetadata = () => {
+            video.play();
+            setInterval(() => detectObjects(video, model), 1000); // Run detection every second
+          };
+        })
+        .catch(err => console.error('Error accessing camera:', err));
+    }
+
+    main();
+  </script>
+</body>
+</html>
